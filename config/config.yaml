@@ -1,0 +1,172 @@
+# Heavy Rainfall Susceptibility Model — Configuration
+# Default production mode: API streaming (real remote data only).
+
+project:
+  name: rainfall_susceptibility
+  version: 2.1.0
+  random_seed: 42
+  crs: EPSG:4326
+  metric_crs: EPSG:3857
+
+study_area:
+  boundary_path: null
+  target_resolution_m: 5000   # CHIRPS-scale; do not claim 30 m rainfall detail
+
+time:
+  start_date: "2015-01-01"
+  end_date: "2020-12-31"
+  seasons:
+    wet_season: [3, 4, 5, 10, 11, 12]
+    dry_season: [1, 2, 6, 7, 8, 9]
+
+heavy_rain_definition:
+  method: percentile
+  fixed_threshold_mm: 50.0
+  percentile: 95
+
+factors:
+  atmospheric_factors:
+    mean_annual_precip:
+      enabled: true
+      classification: percentile
+      standardization: minmax
+    rx1day:
+      enabled: true
+      classification: percentile
+      standardization: minmax
+    rx5day:
+      enabled: true
+      classification: percentile
+      standardization: minmax
+    r95p:
+      enabled: true
+      classification: percentile
+      standardization: minmax
+    relative_humidity:
+      enabled: true
+      classification: zscore
+      standardization: zscore
+    temperature:
+      enabled: true
+      classification: zscore
+      standardization: zscore
+    pressure_anomaly:
+      enabled: false
+      classification: zscore
+      standardization: zscore
+    wind_speed:
+      enabled: true
+      classification: zscore
+      standardization: zscore
+    distance_to_coast:
+      enabled: true
+      classification: fuzzy
+      standardization: fuzzy_decay
+      decay_km: 100
+  terrain_factors:
+    elevation:
+      enabled: true
+      classification: quantile
+      standardization: minmax
+    slope:
+      enabled: true
+      classification: quantile
+      standardization: minmax
+    aspect_exposure:
+      enabled: true
+      classification: categorical
+      standardization: minmax
+      dominant_wind_from_deg: 90.0
+  excluded_flood_factors:
+    - topographic_wetness_index
+    - land_use_land_cover
+    - soil_moisture
+    - ndvi
+    - watershed_drainage_density
+
+weighting:
+  method: ahp
+  ahp_factor_order:
+    - mean_annual_precip
+    - rx1day
+    - rx5day
+    - r95p
+    - relative_humidity
+    - temperature
+    - wind_speed
+    - distance_to_coast
+    - elevation
+    - slope
+    - aspect_exposure
+  ahp_max_acceptable_cr: 0.1
+
+correlation:
+  pearson_flag_threshold: 0.7
+  spearman_flag_threshold: 0.7
+  vif_flag_threshold: 5.0
+
+classification:
+  n_classes: 5
+  class_labels:
+    - Very Low
+    - Low
+    - Moderate
+    - High
+    - Very High
+
+uncertainty:
+  weight_perturbation_pcts: [0.1, 0.2]
+  monte_carlo_iterations: 200
+  input_noise_sigma: 0.05
+
+validation:
+  station_data_path: data/validation/stations.csv
+  metrics_continuous: [pearson, spearman, rmse, mae, r2, bias]
+  metrics_classification: [roc_auc, precision, recall, f1]
+
+paths:
+  raw_dir: data/raw
+  processed_dir: data/processed
+  output_raster_dir: outputs/rasters
+  output_stat_dir: outputs/statistics
+  output_fig_dir: outputs/figures
+  output_report_dir: outputs/reports
+
+nodata_value: -9999.0
+
+scientific_options:
+  allow_synthetic_data: false
+  warn_on_known_issues: true
+
+data_acquisition:
+  # Production default: stream real data over HTTP/S3 for the AOI + period
+  mode: api   # api | local
+  access:
+    method: remote_stream
+    allow_synthetic: false
+    permanent_local_store: false
+  precipitation:
+    primary: chirps
+    fallback: [imerg]
+  atmospheric:
+    provider: aws_zarr
+    endpoint: "s3://era5-pds/zarr/"
+    requires_auth: false
+    variables:
+      temperature: air_temperature_at_2_metres
+      u_wind: eastward_wind_at_10_metres
+      v_wind: northward_wind_at_10_metres
+      dewpoint: dew_point_temperature_at_2_metres
+  dem:
+    provider: copernicus_dem
+  coastline:
+    provider: natural_earth
+    metric: distance_to_ocean_coastline
+  gaul:
+    data_dir: data/boundaries/gaul
+    layer: null
+    level: 2
+  limits:
+    max_aoi_area_km2: 1000000
+    max_chirps_days: 5475
+    max_download_gb: 10

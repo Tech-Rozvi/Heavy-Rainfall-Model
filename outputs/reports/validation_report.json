@@ -1,0 +1,68 @@
+{
+  "CHIRPS": {
+    "continuous": {
+      "n": 8,
+      "pearson_r": 0.9790341571153094,
+      "pearson_p": 2.267894293172789e-05,
+      "spearman_r": 0.9761904761904763,
+      "spearman_p": 3.3143960262001043e-05,
+      "rmse": 2080.473960695043,
+      "mae": 1968.8403914058986,
+      "r2": -8.571977597915554,
+      "bias": -1968.8403914058986
+    },
+    "classification": {
+      "n": 8,
+      "roc_auc": 0.8125,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "decision_threshold": 0.5
+    },
+    "n_stations": 8
+  },
+  "ERA5-Land": {
+    "continuous": {
+      "n": 8,
+      "pearson_r": 0.9472746074521909,
+      "pearson_p": 0.00035209952720142876,
+      "spearman_r": 0.8333333333333335,
+      "spearman_p": 0.01017554012345675,
+      "rmse": 1844.125047298737,
+      "mae": 1753.774922397648,
+      "r2": -9.458136242812484,
+      "bias": -1753.774922397648
+    },
+    "classification": {
+      "n": 8,
+      "roc_auc": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "decision_threshold": 0.5
+    },
+    "n_stations": 8
+  },
+  "station": {
+    "continuous": {
+      "n": 9,
+      "pearson_r": 0.8922663391377238,
+      "pearson_p": 0.0012144486897614991,
+      "spearman_r": 0.9333333333333332,
+      "spearman_p": 0.00023589981215941676,
+      "rmse": 2335.5457268934424,
+      "mae": 2275.9555476998235,
+      "r2": -18.843901175039125,
+      "bias": -2275.9555476998235
+    },
+    "classification": {
+      "n": 9,
+      "roc_auc": 1.0,
+      "precision": 1.0,
+      "recall": 0.4,
+      "f1": 0.5714285714285714,
+      "decision_threshold": 0.5
+    },
+    "n_stations": 9
+  }
+}
